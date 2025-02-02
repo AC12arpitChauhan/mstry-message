@@ -101,7 +101,7 @@ function UserDashboard() {
     fetchAcceptMessages();
 
     console.log("Fetched acceptMessages after setting:", watch("acceptMessages"));
-  }, [session, setValue, toast]);
+  }, [session, setValue, toast, fetchAcceptMessages, fetchMessages, watch]);
 
   // Handle switch change
   // const handleSwitchChange = async () => {

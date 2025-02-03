@@ -5,8 +5,8 @@ import { authOptions } from "../../auth/[...nextauth]/options";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function DELETE(request: NextRequest) {
-  const { searchParams } = new URL(request.url);
-  const messageid = searchParams.get("messageid");
+  const url = new URL(request.url);
+  const messageid = url.pathname.split("/").pop(); // Extracts messageid from URL
 
   if (!messageid) {
     return NextResponse.json(

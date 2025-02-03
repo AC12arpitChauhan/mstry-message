@@ -49,7 +49,7 @@ export default function SignUpForm() {
           const response = await axios.get<apiResponse>(
             `/api/check-username-unique?username=${username}`
           );
-        //   console.log(response.data.message)
+          //   console.log(response.data.message)
           setUsernameMessage(response.data.message);
         } catch (error) {
           const axiosError = error as AxiosError<apiResponse>;
@@ -83,7 +83,7 @@ export default function SignUpForm() {
       const axiosError = error as AxiosError<apiResponse>;
 
       // Default error message
-      let errorMessage = axiosError.response?.data.message;
+      const errorMessage = axiosError.response?.data.message;
       ("There was a problem with your sign-up. Please try again.");
 
       toast({
@@ -112,28 +112,31 @@ export default function SignUpForm() {
               control={form.control}
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Username</FormLabel>
-                  <Input
-                    {...field}
-                    onChange={(e) => {
-                      field.onChange(e);
-                      debounced(e.target.value);
-                    }}
-                  />
-                  {isCheckingUsername && <Loader2 className="animate-spin" />}
-                  {!isCheckingUsername && usernameMessage && (
-                    <p
-                      className={`text-sm ${
-                        usernameMessage === "username is unique and available"
-                          ? "text-green-500"
-                          : "text-red-500"
-                      }`}
-                    >
-                      {usernameMessage}
-                    </p>
-                  )}
-                  <FormMessage />
-                </FormItem>
+  <FormLabel>Username</FormLabel>
+  <Input
+    {...field}
+    onChange={(e) => {
+      field.onChange(e);
+      debounced(e.target.value);
+    }}
+  />
+  {isCheckingUsername && (
+    <Loader2 className="animate-spin" />
+  )}
+  {!isCheckingUsername && usernameMessage && (
+    <p
+      className={`text-sm ${
+        usernameMessage === "username is unique and available"
+          ? "text-green-500"
+          : "text-red-500"
+      }`}
+    >
+      {usernameMessage}
+    </p>
+  )}
+  <FormMessage />
+</FormItem>
+
               )}
             />
             <FormField

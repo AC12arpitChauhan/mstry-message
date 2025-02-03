@@ -57,9 +57,12 @@ export const authOptions: NextAuthOptions = {
           } else {
             throw new Error("Incorrect password.");
           }
-        } catch (err: any) {
-          console.error("Error during authentication:", err.message);
-          throw new Error(err.message || "Authentication error.");
+        } catch (err: unknown) {
+          if (err instanceof Error) {
+            console.error("Error during authentication:", err.message);
+          } else {
+            console.error("An unknown error occurred.");
+          }
         }
       }
       ,

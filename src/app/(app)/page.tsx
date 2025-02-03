@@ -8,9 +8,7 @@ import messages from '@/messages.json';
 import {
   Carousel,
   CarouselContent,
-  CarouselItem,
-  CarouselNext,
-  CarouselPrevious,
+  CarouselItem
 } from '@/components/ui/carousel';
 
 export default function Home() {

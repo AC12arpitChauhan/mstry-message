@@ -79,21 +79,22 @@ export default function SignUpForm() {
       setIsSubmitting(false);
     } catch (error) {
       console.error("Error during sign-up:", error);
-
+    
       const axiosError = error as AxiosError<apiResponse>;
-
+    
       // Default error message
-      const errorMessage = axiosError.response?.data.message;
-      ("There was a problem with your sign-up. Please try again.");
-
+      const errorMessage =
+        axiosError.response?.data.message ?? "There was a problem with your sign-up. Please try again.";
+    
       toast({
         title: "Sign Up Failed",
         description: errorMessage,
         variant: "destructive",
       });
-
+    
       setIsSubmitting(false);
     }
+    
   };
 
   return (

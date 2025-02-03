@@ -5,8 +5,8 @@ import { authOptions } from "../../auth/[...nextauth]/options";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function DELETE(
-  context: { params: { messageid: string } },
   request: NextRequest,
+  context: { params: { messageid: string } },
 ) {
   const { messageid } = context.params;
 

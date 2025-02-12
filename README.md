@@ -1,36 +1,86 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Mstry Message
 
-## Getting Started
+Mstry Message is an anonymous feedback platform built using Next.js. It allows users to receive anonymous messages and provides AI-powered feedback recommendations.
 
-First, run the development server:
+## 🚀 Live Demo
+[View Mstry Message](https://mstry-message-umber.vercel.app/)
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+## 🛠 Tech Stack
+- **Frontend:** Next.js 15, React Hook Form, ShadCN, TailwindCSS, Debouncing
+- **Backend:** Next.js API Routes, MongoDB
+- **Authentication:** NextAuth/Auth.js (Custom Credentials Provider)
+- **Email Verification:** Resend (OTP-based verification)
+- **AI-powered Feedback:** OpenAI API, Vercel AI SDK (useCompletion & streaming text)
+- **Database Operations:** MongoDB Aggregation Pipeline
+
+## 📂 Project Structure
+```
+/mstry-message
+├── public/            # Static assets
+├── src/
+│   ├── app/          # Next.js App Router
+│   ├── components/   # Reusable UI components
+│   ├── hooks/        # Custom React hooks
+│   ├── lib/          # Utility functions
+│   ├── pages/        # API routes and meta pages
+│   ├── styles/       # Global styles
+│   ├── types/        # TypeScript types
+│   ├── schemas/      # Zod validation schemas
+│   ├── context/      # Context providers
+├── next.config.js    # Next.js configuration
+├── tailwind.config.js # TailwindCSS configuration
+├── tsconfig.json     # TypeScript configuration
+├── README.md         # Project documentation
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## 🔧 Setup Instructions
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+### 1️⃣ Clone the Repository
+```bash
+git clone https://github.com/AC12arpitChauhan/mstry-message.git
+cd mstry-message
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+### 2️⃣ Install Dependencies
+```bash
+pnpm install  # or npm install / yarn install
+```
 
-## Learn More
+### 3️⃣ Setup Environment Variables
+Create a `.env.local` file in the root directory and configure the following variables:
+```env
+NEXTAUTH_SECRET=your-secret-key
+RESEND_API_KEY=your-resend-api-key
+MONGODB_URI=your-mongodb-connection-string
+OPENAI_API_KEY=your-openai-api-key
+```
 
-To learn more about Next.js, take a look at the following resources:
+### 4️⃣ Run the Development Server
+```bash
+pnpm dev  # or npm run dev / yarn dev
+```
+App will be available at `http://localhost:3000`
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## 🚀 Deployment
+### **Frontend:** Vercel
+1. Push your code to GitHub
+2. Connect repository to Vercel
+3. Configure environment variables in Vercel dashboard
+4. Deploy 🚀
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+### **Backend:** Next.js API Routes (handled by Vercel)
+- The backend is integrated into Next.js via API routes.
+- No separate backend deployment needed.
 
-## Deploy on Vercel
+## 🎯 Features
+- 🔒 Secure authentication with NextAuth.js
+- 📩 Anonymous messaging system
+- 📧 OTP-based email verification (Resend)
+- 🤖 AI-powered feedback suggestions (OpenAI)
+- 🗄️ Optimized database queries with MongoDB Aggregation
+- 🎨 Elegant UI with ShadCN & TailwindCSS
+- ⚡ Fast API responses using Vercel AI SDK
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## 🤝 Contributing
+Feel free to open issues and pull requests to improve the platform.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.

@@ -6,8 +6,8 @@ services:
     restart: always
     ports:
       - "3000:3000"
-    environment:
-      - NODE_ENV=production
+    env_file:
+      - .env.production
 
   nginx:
     image: nginx:alpine

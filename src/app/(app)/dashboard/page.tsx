@@ -179,7 +179,7 @@ function UserDashboard() {
   const profileUrl = `${baseUrl}/u/${username}`;
 
   const copyToClipboard = () => {
-    navigator.clipboard.writeText(profileUrl);
+    navigator.clipboard.writeText("abc");
     toast({
       title: "URL Copied!",
       description: "Profile URL has been copied to clipboard.",

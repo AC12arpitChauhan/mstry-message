@@ -2,9 +2,7 @@
 @tailwind components;
 @tailwind utilities;
 
-body {
-  font-family: Arial, Helvetica, sans-serif;
-}
+
 
 @layer base {
   :root {
@@ -69,4 +67,27 @@ body {
   body {
     @apply bg-background text-foreground;
   }
+}
+
+/* Override for pages using Aurora background */
+.aurora-page {
+  background: transparent !important;
+}
+
+.aurora-page body {
+  background: transparent !important;
+}
+
+::-webkit-scrollbar {
+  display: none;
+}
+
+/* Hide scrollbar for Firefox */
+html {
+  scrollbar-width: none;
+}
+
+/* Hide scrollbar for IE, Edge (legacy) */
+body {
+  -ms-overflow-style: none;
 }

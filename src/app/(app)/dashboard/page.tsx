@@ -60,8 +60,9 @@ export default function DashboardOverview() {
     return null;
   }
 
-  const { username } = session.user as User;
-  const baseUrl = `${window.location.protocol}//${window.location.host}`;
+  const user = session.user as User;
+  const username = user.username || "";
+  const baseUrl = typeof window !== "undefined" ? `${window.location.protocol}//${window.location.host}` : "";
   const profileUrl = `${baseUrl}/u/${username}`;
 
   return (

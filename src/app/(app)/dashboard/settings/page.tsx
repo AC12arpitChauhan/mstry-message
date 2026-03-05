@@ -23,7 +23,8 @@ export default function SettingsPage() {
 
   if (!session || !session.user) return null;
 
-  const { username } = session.user as User;
+  const user = session.user as User;
+  const username = user.username || "";
   const baseUrl = typeof window !== "undefined" ? `${window.location.protocol}//${window.location.host}` : "";
   const profileUrl = `${baseUrl}/u/${username}`;
 

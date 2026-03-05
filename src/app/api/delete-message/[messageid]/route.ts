@@ -1,4 +1,4 @@
-import UserModel from "@/model/User";
+import MessageModel from "@/model/Message";
 import { getServerSession } from "next-auth/next";
 import dbConnect from "@/lib/dbConnect";
 import { authOptions } from "../../auth/[...nextauth]/options";
@@ -6,7 +6,7 @@ import { NextRequest, NextResponse } from "next/server";
 
 export async function DELETE(request: NextRequest) {
   const url = new URL(request.url);
-  const messageid = url.pathname.split("/").pop(); // Extracts messageid from URL
+  const messageid = url.pathname.split("/").pop();
 
   if (!messageid) {
     return NextResponse.json(
@@ -27,12 +27,12 @@ export async function DELETE(request: NextRequest) {
   }
 
   try {
-    const updateResult = await UserModel.updateOne(
-      { _id: user._id },
-      { $pull: { messages: { _id: messageid } } }
-    );
+    const deleteResult = await MessageModel.deleteOne({
+      _id: messageid,
+      recipientId: user._id,
+    });
 
-    if (updateResult.modifiedCount === 0) {
+    if (deleteResult.deletedCount === 0) {
       return NextResponse.json(
         { success: false, message: "Message not found or already deleted" },
         { status: 404 }
@@ -51,3 +51,4 @@ export async function DELETE(request: NextRequest) {
     );
   }
 }
+

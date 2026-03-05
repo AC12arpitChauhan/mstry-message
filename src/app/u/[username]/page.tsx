@@ -4,7 +4,7 @@ import React, { useState, useEffect } from 'react';
 import axios, { AxiosError } from 'axios';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
-import { Loader2, Send, Sparkles, MessageSquare, ArrowRight, User } from 'lucide-react';
+import { Loader2, Send, Sparkles, MessageSquare, ArrowRight, User, Pin } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { CardHeader, CardContent, Card } from '@/components/ui/card';
 import {
@@ -23,7 +23,6 @@ import Link from 'next/link';
 import { useParams } from 'next/navigation';
 import { messageSchema } from '@/schemas/messageSchema';
 import { motion } from 'motion/react';
-import { cn } from '@/lib/utils';
 
 const specialChar = '||';
 
@@ -37,12 +36,25 @@ const parseStringMessages = (messageString: string): string[] => {
     .filter(msg => msg.length > 0);
 };
 
-// Initial placeholder suggestions
 const initialSuggestions = [
   "What's a hobby you've recently started?",
   "If you could have dinner with any historical figure, who would it be?",
   "What's a simple thing that makes you happy?"
 ];
+
+interface ProfileData {
+  username: string;
+  bio: string | null;
+  profilePicture: string | null;
+  themeColor: string;
+  isAcceptingMessage: boolean;
+  pinnedMessages: Array<{
+    _id: string;
+    content: string;
+    reply: string;
+    createdAt: string;
+  }>;
+}
 
 export default function SendMessage() {
   const params = useParams<{ username: string }>();
@@ -50,6 +62,8 @@ export default function SendMessage() {
 
   const [suggestions, setSuggestions] = useState<string[]>(initialSuggestions);
   const [isSuggestLoading, setIsSuggestLoading] = useState(false);
+  const [profileData, setProfileData] = useState<ProfileData | null>(null);
+  const [isProfileLoading, setIsProfileLoading] = useState(true);
 
   const form = useForm<z.infer<typeof messageSchema>>({
     resolver: zodResolver(messageSchema),
@@ -62,6 +76,30 @@ export default function SendMessage() {
   };
 
   const [isLoading, setIsLoading] = useState(false);
+
+  // Fetch profile data
+  useEffect(() => {
+    const fetchProfile = async () => {
+      try {
+        const response = await axios.get(
+          `/api/get-public-profile?username=${username}`
+        );
+        setProfileData(response.data.data);
+      } catch {
+        // Profile fetch failed — use defaults
+      } finally {
+        setIsProfileLoading(false);
+      }
+    };
+    fetchProfile();
+  }, [username]);
+
+  // Track profile view
+  useEffect(() => {
+    axios.post('/api/track-view', { username }).catch(() => {});
+  }, [username]);
+
+  const themeColor = profileData?.themeColor || '#06b6d4';
 
   const onSubmit = async (data: z.infer<typeof messageSchema>) => {
     setIsLoading(true);
@@ -105,7 +143,6 @@ export default function SendMessage() {
         throw new Error('Failed to fetch suggestions');
       }
 
-      // Read the stream as text
       const reader = response.body?.getReader();
       const decoder = new TextDecoder();
       let fullText = '';
@@ -120,7 +157,6 @@ export default function SendMessage() {
         }
       }
 
-      // Parse the complete response
       const parsedSuggestions = parseStringMessages(fullText);
       setSuggestions(parsedSuggestions);
       
@@ -139,28 +175,117 @@ export default function SendMessage() {
   return (
     <div className="min-h-screen bg-black pt-24 pb-16 px-4">
       <div className="container mx-auto max-w-4xl">
-        {/* Hero Section */}
+        {/* Hero Section with Profile Info */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
           className="text-center mb-12"
         >
-          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-gradient-to-r from-cyan-500/10 to-blue-500/10 border border-cyan-500/20 mb-6">
-            <User className="h-4 w-4 text-cyan-400" />
-            <span className="text-sm text-cyan-400">Anonymous Message</span>
+          {/* Profile Picture */}
+          {!isProfileLoading && profileData?.profilePicture && (
+            <div className="mb-6">
+              <div
+                className="h-20 w-20 mx-auto rounded-full border-2 overflow-hidden"
+                style={{ borderColor: themeColor }}
+              >
+                <img
+                  src={profileData.profilePicture}
+                  alt={`${username}'s avatar`}
+                  className="h-full w-full object-cover"
+                />
+              </div>
+            </div>
+          )}
+
+          <div
+            className="inline-flex items-center gap-2 px-4 py-2 rounded-full border mb-6"
+            style={{
+              backgroundColor: `${themeColor}10`,
+              borderColor: `${themeColor}33`,
+            }}
+          >
+            <User className="h-4 w-4" style={{ color: themeColor }} />
+            <span className="text-sm" style={{ color: themeColor }}>
+              Anonymous Message
+            </span>
           </div>
           
           <h1 className="text-4xl md:text-6xl font-bold text-white mb-4">
             Send a message to
           </h1>
-          <div className="text-3xl md:text-5xl font-bold bg-gradient-to-r from-cyan-400 to-blue-500 bg-clip-text text-transparent">
+          <div
+            className="text-3xl md:text-5xl font-bold bg-clip-text text-transparent"
+            style={{
+              backgroundImage: `linear-gradient(to right, ${themeColor}, #3b82f6)`,
+            }}
+          >
             @{username}
           </div>
-          <p className="text-neutral-400 mt-4 text-lg">
-            Your identity will remain completely anonymous
-          </p>
+
+          {/* Bio */}
+          {profileData?.bio && (
+            <p className="text-neutral-400 mt-4 text-lg max-w-md mx-auto">
+              {profileData.bio}
+            </p>
+          )}
+
+          {!profileData?.bio && (
+            <p className="text-neutral-400 mt-4 text-lg">
+              Your identity will remain completely anonymous
+            </p>
+          )}
         </motion.div>
+
+        {/* Pinned Messages */}
+        {profileData?.pinnedMessages && profileData.pinnedMessages.length > 0 && (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.05 }}
+            className="mb-8"
+          >
+            <div className="flex items-center gap-2 mb-4">
+              <Pin className="h-4 w-4" style={{ color: themeColor }} />
+              <h2 className="text-lg font-semibold text-white">
+                Pinned Replies
+              </h2>
+            </div>
+            <div className="space-y-3">
+              {profileData.pinnedMessages.map((msg) => (
+                <Card
+                  key={msg._id}
+                  className="border-neutral-800 bg-neutral-950/50 backdrop-blur-sm"
+                >
+                  <CardContent className="p-5">
+                    <div className="rounded-lg bg-neutral-900/50 p-3 mb-3">
+                      <p className="text-xs text-neutral-500 mb-1">
+                        Anonymous message
+                      </p>
+                      <p className="text-neutral-300 text-sm">
+                        {msg.content}
+                      </p>
+                    </div>
+                    <div
+                      className="pl-3 border-l-2"
+                      style={{ borderColor: `${themeColor}50` }}
+                    >
+                      <p
+                        className="text-xs font-medium mb-1"
+                        style={{ color: themeColor }}
+                      >
+                        @{username}&apos;s reply
+                      </p>
+                      <p className="text-neutral-200 text-sm">
+                        {msg.reply}
+                      </p>
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          </motion.div>
+        )}
 
         {/* Message Form */}
         <motion.div
@@ -178,7 +303,7 @@ export default function SendMessage() {
                     render={({ field }) => (
                       <FormItem>
                         <FormLabel className="text-white text-lg flex items-center gap-2">
-                          <MessageSquare className="h-5 w-5 text-cyan-400" />
+                          <MessageSquare className="h-5 w-5" style={{ color: themeColor }} />
                           Your Anonymous Message
                         </FormLabel>
                         <FormControl>
@@ -195,7 +320,10 @@ export default function SendMessage() {
                   <Button
                     type="submit"
                     disabled={isLoading || !messageContent}
-                    className="w-full h-12 bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-600 hover:to-blue-700 text-white font-medium transition-all duration-300"
+                    className="w-full h-12 text-white font-medium transition-all duration-300"
+                    style={{
+                      backgroundImage: `linear-gradient(to right, ${themeColor}, #3b82f6)`,
+                    }}
                   >
                     {isLoading ? (
                       <>
@@ -271,7 +399,7 @@ export default function SendMessage() {
                       <div className="border border-neutral-800 rounded-xl bg-neutral-900/60 hover:border-cyan-500/40 transition-all duration-300 p-5">
                         <div className="flex items-start justify-between gap-4">
                           <div className="flex-1">
-                            <h4 className="text-cyan-400 text-sm font-semibold mb-2">
+                            <h4 className="text-sm font-semibold mb-2" style={{ color: themeColor }}>
                               Question {index + 1}
                             </h4>
                             <p className="text-neutral-200 leading-relaxed mb-4">{message}</p>
@@ -280,7 +408,10 @@ export default function SendMessage() {
                         <Button
                           onClick={() => handleMessageClick(message)}
                           size="sm"
-                          className="bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-600 hover:to-blue-700 text-white"
+                          className="text-white"
+                          style={{
+                            backgroundImage: `linear-gradient(to right, ${themeColor}, #3b82f6)`,
+                          }}
                         >
                           <MessageSquare className="mr-2 h-4 w-4" />
                           Use This Question
@@ -291,7 +422,7 @@ export default function SendMessage() {
                 </>
               ) : (
                 <div className="text-center py-8">
-                  <p className="text-neutral-400">Click "Generate New" to get AI suggestions</p>
+                  <p className="text-neutral-400">Click &quot;Generate New&quot; to get AI suggestions</p>
                 </div>
               )}
             </CardContent>
@@ -307,7 +438,12 @@ export default function SendMessage() {
         >
           <Card className="border-neutral-800 bg-gradient-to-br from-neutral-950 to-neutral-900 backdrop-blur-sm">
             <CardContent className="p-8 text-center">
-              <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-gradient-to-br from-cyan-500 to-blue-600 mb-4">
+              <div
+                className="inline-flex items-center justify-center w-16 h-16 rounded-full mb-4"
+                style={{
+                  backgroundImage: `linear-gradient(to bottom right, ${themeColor}, #3b82f6)`,
+                }}
+              >
                 <MessageSquare className="h-8 w-8 text-white" />
               </div>
               <h3 className="text-2xl font-bold text-white mb-2">
@@ -317,7 +453,12 @@ export default function SendMessage() {
                 Create your account and start receiving anonymous messages from your friends, followers, and fans.
               </p>
               <Link href="/sign-up">
-                <Button className="bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-600 hover:to-blue-700 text-white font-medium px-8 h-12">
+                <Button
+                  className="text-white font-medium px-8 h-12"
+                  style={{
+                    backgroundImage: `linear-gradient(to right, ${themeColor}, #3b82f6)`,
+                  }}
+                >
                   Create Your Account
                   <ArrowRight className="ml-2 h-4 w-4" />
                 </Button>

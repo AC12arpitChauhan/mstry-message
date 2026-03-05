@@ -28,6 +28,11 @@ export interface User extends Document {
   isVerified: boolean;
   isAcceptingMessage: boolean;
   messages: Message[];
+  profilePicture?: string;
+  bio?: string;
+  themeColor?: string;
+  blockedKeywords?: string[];
+  blockedIPs?: string[];
 }
 
 const UserSchema: Schema<User> = new Schema({
@@ -64,6 +69,27 @@ const UserSchema: Schema<User> = new Schema({
     default: true,
   },
   messages: [messageSchema],
+  profilePicture: {
+    type: String,
+    default: null,
+  },
+  bio: {
+    type: String,
+    maxlength: 200,
+    default: null,
+  },
+  themeColor: {
+    type: String,
+    default: "#06b6d4",
+  },
+  blockedKeywords: {
+    type: [String],
+    default: [],
+  },
+  blockedIPs: {
+    type: [String],
+    default: [],
+  },
 });
 
 const UserModel =

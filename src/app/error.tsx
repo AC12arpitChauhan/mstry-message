@@ -1,0 +1,33 @@
+'use client'
+
+import { useEffect } from 'react'
+import { Button } from '@/components/ui/button'
+
+export default function Error({
+  error,
+  reset,
+}: {
+  error: Error & { digest?: string }
+  reset: () => void
+}) {
+  useEffect(() => {
+    // Log the error to an error reporting service
+    console.error(error)
+  }, [error])
+
+  return (
+    <div className="flex flex-col items-center justify-center min-h-screen bg-black text-white px-4">
+      <h2 className="text-2xl font-bold mb-4">Something went wrong!</h2>
+      <p className="text-neutral-400 mb-8 max-w-md text-center">
+        {error.message || "An unexpected error occurred while rendering the page."}
+      </p>
+      <Button
+        variant="outline"
+        className="border-neutral-800 text-white hover:bg-neutral-900"
+        onClick={() => reset()}
+      >
+        Try again
+      </Button>
+    </div>
+  )
+}

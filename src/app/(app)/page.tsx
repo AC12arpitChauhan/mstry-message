@@ -19,6 +19,7 @@ import { useEffect } from 'react';
 import { StickyScroll } from '@/components/ui/sticky-scroll-reveal';
 import Link from "next/link";
 import { WavyBackground } from '@/components/ui/wavy-background';
+import { LandingBentoGrid } from '@/components/landing/LandingBentoGrid';
 
 export default function Home() {
   useEffect(() => {
@@ -130,6 +131,8 @@ export default function Home() {
           </motion.div>
         </main>
         </WavyBackground>
+        
+        <LandingBentoGrid />
 
         {/* Gradient Transition */}
         

@@ -20,7 +20,7 @@ export async function GET(request: Request) {
     const { searchParams } = new URL(request.url);
 
     const cursor = searchParams.get("cursor");
-    const limit = Math.min(parseInt(searchParams.get("limit") || "20"), 50);
+    const limit = Math.min(parseInt(searchParams.get("limit") || "5"), 50);
     const filter = searchParams.get("filter") || "all";
     const search = searchParams.get("search")?.trim();
 

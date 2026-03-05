@@ -91,7 +91,7 @@ export default function InboxPage() {
       try {
         const params = new URLSearchParams();
         params.set("filter", activeFilter);
-        params.set("limit", "20");
+        params.set("limit", "5");
         if (cursor) params.set("cursor", cursor);
         const currentSearch = searchOverride !== undefined ? searchOverride : debouncedSearch;
         if (currentSearch) params.set("search", currentSearch);
@@ -104,6 +104,8 @@ export default function InboxPage() {
         const newCursor = response.data.nextCursor || null;
         const searchMode = response.data.searchMode || false;
         
+        console.log("Frontend: Fetch success", { resultCount: newMessages.length, nextCursor: newCursor, searchMode });
+
         setIsSearchMode(searchMode);
 
         if (cursor && !searchMode) {
@@ -114,6 +116,7 @@ export default function InboxPage() {
 
         setNextCursor(newCursor);
         setHasMore(!searchMode && !!newCursor);
+        console.log("Frontend: State updated", { hasMore: !searchMode && !!newCursor });
 
         if (refresh) {
           toast({ title: "Refreshed", description: "Showing latest messages" });
@@ -156,11 +159,14 @@ export default function InboxPage() {
 
   // Infinite scroll observer
   useEffect(() => {
+    console.log("Frontend: Observer Effect", { hasMore, isLoadingMore, isLoading, nextCursor });
     if (observerRef.current) observerRef.current.disconnect();
     observerRef.current = new IntersectionObserver(
       (entries) => {
-        if (entries[0].isIntersecting && hasMore && !isLoadingMore && !isLoading) {
-          if (nextCursor) {
+        if (entries[0].isIntersecting) {
+          console.log("Frontend: Element Intersecting", { hasMore, isLoadingMore, isLoading, nextCursor });
+          if (hasMore && !isLoadingMore && !isLoading && nextCursor) {
+            console.log("Frontend: Triggering fetchMore", { nextCursor });
             fetchMessages(false, nextCursor);
           }
         }
